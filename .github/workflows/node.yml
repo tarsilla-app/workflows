@@ -19,7 +19,8 @@ on:
       npm-token:
         required: false
     outputs:
-      pages_url: ${{ jobs.deploy-storybook.outputs.pages_url }}
+      pages_url:
+        value: ${{ jobs.deploy-storybook.outputs.pages_url }}
 jobs:
   #snyk-test:
   #  runs-on: ubuntu-latest
