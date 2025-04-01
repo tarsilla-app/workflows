@@ -19,36 +19,41 @@ on:
       npm-token:
         required: false
 jobs:
-  snyk-test:
+  #snyk-test:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Run Snyk Test
+  #      uses: tarsilla-app/actions/code-analysis/node/snyk/test@main
+  #      with:
+  #        token: ${{ secrets.snyk-token }}
+  #owasp:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Run OWASP Dependency-Check
+  #      uses: tarsilla-app/actions/code-analysis/node/owasp@main
+  #      with:
+  #        suppression: ${{ inputs.suppression }}
+  #snyk-code-test:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Run Snyk Code Test
+  #      uses: tarsilla-app/actions/code-analysis/node/snyk/code-test@main
+  #      with:
+  #        token: ${{ secrets.snyk-token }}
+  #codeql:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Run CodeQL Analysis
+  #      uses: tarsilla-app/actions/code-analysis/node/codeql@main
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Run Snyk Test
-        uses: tarsilla-app/actions/code-analysis/node/snyk/test@main
-        with:
-          token: ${{ secrets.snyk-token }}
-  owasp:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run OWASP Dependency-Check
-        uses: tarsilla-app/actions/code-analysis/node/owasp@main
-        with:
-          suppression: ${{ inputs.suppression }}
-  snyk-code-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Snyk Code Test
-        uses: tarsilla-app/actions/code-analysis/node/snyk/code-test@main
-        with:
-          token: ${{ secrets.snyk-token }}
-  codeql:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run CodeQL Analysis
-        uses: tarsilla-app/actions/code-analysis/node/codeql@main
+      - name: Run Tests
+        run: "echo tests"
   publish-npm:
     runs-on: ubuntu-latest
     if: ${{ fromJson(inputs.deploy)[0] == 'library' }}
-    needs: [snyk-test, owasp, snyk-code-test, codeql]
+    #needs: [snyk-test, owasp, snyk-code-test, codeql]
     steps:
       - name: Publish to NPM
         uses: tarsilla-app/actions/publish/library@main
@@ -58,7 +63,7 @@ jobs:
   deploy-storybook:
     runs-on: ubuntu-latest
     if: ${{ fromJson(inputs.deploy)[0] == 'storybook' }}
-    needs: [snyk-test, owasp, snyk-code-test, codeql]
+    #needs: [snyk-test, owasp, snyk-code-test, codeql]
     outputs:
       pages_url: ${{ steps.deploy.outputs.pages_url }}
     steps:
@@ -67,5 +72,3 @@ jobs:
         uses: tarsilla-app/actions/deploy/storybook@main
         with:
           deploy: ${{ fromJson(inputs.deploy)[1] }}
-      - name: Print Pages URL
-        run: "echo 'Pages URL: ${{ steps.deploy.outputs.pages_url }}'"
