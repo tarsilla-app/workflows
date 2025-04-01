@@ -61,7 +61,7 @@ jobs:
       - name: Publish to NPM
         uses: tarsilla-app/actions/publish/library@main
         with:
-          publish: ${{ fromJson(inputs.publish)[1] }}
+          repository: ${{ fromJson(inputs.publish)[1] }}
           npm-token: ${{ secrets.npm-token }}
   deploy-storybook:
     runs-on: ubuntu-latest
@@ -74,4 +74,4 @@ jobs:
         name: Deploy Storybook to Github Pages
         uses: tarsilla-app/actions/deploy/storybook@main
         with:
-          deploy: ${{ fromJson(inputs.deploy)[1] }}
+          host: ${{ fromJson(inputs.deploy)[1] }}
