@@ -20,26 +20,48 @@ on:
         required: false
 jobs:
   snyk-test:
-    uses: ./node/snyk-test.yml
-    secrets:
-      token: ${{ secrets.snyk-token }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Snyk Test
+        uses: tarsilla-app/actions/code-analysis/node/snyk/test@main
+        with:
+          token: ${{ secrets.token }}
   owasp:
-    uses: ./node/owasp.yml
-    with:
-      suppression: ${{ inputs.suppression }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run OWASP Dependency-Check
+        uses: tarsilla-app/actions/code-analysis/node/owasp@main
+        with:
+          suppression: ${{ inputs.suppression }}
   snyk-code-test:
-    uses: ./node/snyk-code-test.yml
-    secrets:
-      token: ${{ secrets.snyk-token }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Snyk Code Test
+        uses: tarsilla-app/actions/code-analysis/node/snyk/code-test@main
+        with:
+          token: ${{ secrets.token }}
   codeql:
-    uses: ./node/codeql.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run CodeQL Analysis
+        uses: tarsilla-app/actions/code-analysis/node/codeql@main
   publish-npm:
+    runs-on: ubuntu-latest
     if: ${{ inputs.publish == 'npm' }}
     needs: [snyk-test, owasp, snyk-code-test, codeql]
-    uses: ./node/npm.yml
-    secrets:
-      token: ${{ secrets.npm-token }}
+    steps:
+      - name: Publish to NPM
+        uses: tarsilla-app/actions/publish/npm@main
+        with:
+          token: ${{ secrets.token }}
   deploy-storybook:
+    runs-on: ubuntu-latest
     if: ${{ inputs.deploy == 'storybook' }}
     needs: [snyk-test, owasp, snyk-code-test, codeql]
-    uses: ./node/storybook.yml
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        name: Deploy Storybook to Github Pages
+        uses: tarsilla-app/actions/deploy/github-pages/storybook@main
