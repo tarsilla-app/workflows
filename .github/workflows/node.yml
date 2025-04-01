@@ -47,23 +47,25 @@ jobs:
         uses: tarsilla-app/actions/code-analysis/node/codeql@main
   publish-npm:
     runs-on: ubuntu-latest
-    if: ${{ inputs.publish == 'npm' }}
+    if: ${{ fromJson(inputs.deploy)[0] == 'library' }}
     needs: [snyk-test, owasp, snyk-code-test, codeql]
     steps:
       - name: Publish to NPM
-        uses: tarsilla-app/actions/publish/npm@main
+        uses: tarsilla-app/actions/publish/library@main
         with:
-          token: ${{ secrets.npm-token }}
+          deploy: ${{ fromJson(inputs.deploy)[1] }}
+          npm-token: ${{ secrets.npm-token }}
   deploy-storybook:
     runs-on: ubuntu-latest
-    if: ${{ inputs.deploy == 'storybook' }}
+    if: ${{ fromJson(inputs.deploy)[0] == 'storybook' }}
     needs: [snyk-test, owasp, snyk-code-test, codeql]
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+    outputs:
+      pages_url: ${{ steps.deploy.outputs.pages_url }}
     steps:
       - id: deploy
         name: Deploy Storybook to Github Pages
-        uses: tarsilla-app/actions/deploy/github-pages/storybook@main
-      - name: Debug Outputs
-        run: "echo 'Page URL: ${{ steps.deploy.outputs.page_url }}'"
+        uses: tarsilla-app/actions/deploy/storybook@main
+        with:
+          deploy: ${{ fromJson(inputs.deploy)[1] }}
+      - name: Print Pages URL
+        run: "echo 'Pages URL: ${{ steps.deploy.outputs.pages_url }}'"
