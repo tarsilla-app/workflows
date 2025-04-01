@@ -18,6 +18,10 @@ on:
         required: true
       npm-token:
         required: false
+    outputs:
+      pages_url:
+        description: "URL for the deployed Storybook site"
+        type: string
 jobs:
   #snyk-test:
   #  runs-on: ubuntu-latest
@@ -72,6 +76,3 @@ jobs:
         uses: tarsilla-app/actions/deploy/storybook@main
         with:
           deploy: ${{ fromJson(inputs.deploy)[1] }}
-
-outputs:
-  pages_url: ${{ jobs.deploy-storybook.outputs.pages_url }}
