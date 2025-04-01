@@ -55,17 +55,17 @@ jobs:
         run: "echo tests"
   publish-npm:
     runs-on: ubuntu-latest
-    if: ${{ fromJson(inputs.publish)[0] == 'library' }}
+    if: ${{ fromJson(inputs.publish).type == 'library' }}
     #needs: [snyk-test, owasp, snyk-code-test, codeql]
     steps:
       - name: Publish to NPM
         uses: tarsilla-app/actions/publish/library@main
         with:
-          repository: ${{ fromJson(inputs.publish)[1] }}
+          repository: ${{ fromJson(inputs.publish).repository }}
           npm-token: ${{ secrets.npm-token }}
   deploy-storybook:
     runs-on: ubuntu-latest
-    if: ${{ fromJson(inputs.deploy)[0] == 'storybook' }}
+    if: ${{ fromJson(inputs.deploy).type == 'storybook' }}
     #needs: [snyk-test, owasp, snyk-code-test, codeql]
     outputs:
       pages_url: ${{ steps.deploy.outputs.pages_url }}
@@ -74,4 +74,4 @@ jobs:
         name: Deploy Storybook to Github Pages
         uses: tarsilla-app/actions/deploy/storybook@main
         with:
-          host: ${{ fromJson(inputs.deploy)[1] }}
+          host: ${{ fromJson(inputs.deploy).host }}
