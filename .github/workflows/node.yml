@@ -19,9 +19,7 @@ on:
       npm-token:
         required: false
     outputs:
-      pages_url:
-        description: "URL for the deployed Storybook site"
-        type: string
+      pages_url: ${{ jobs.deploy-storybook.outputs.pages_url }}
 jobs:
   #snyk-test:
   #  runs-on: ubuntu-latest
