@@ -66,5 +66,4 @@ jobs:
         name: Deploy Storybook to Github Pages
         uses: tarsilla-app/actions/deploy/github-pages/storybook@main
       - name: Debug Outputs
-        run: 
-          echo "Page URL: ${{ steps.deploy.outputs.page_url }}"
+        run: "echo 'Page URL: ${{ steps.deploy.outputs.page_url }}'"
