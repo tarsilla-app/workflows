@@ -3,70 +3,42 @@ description: Github workflow to execute ci as part of a github workflow for Node
 on:
   workflow_call:
     inputs:
-      suppression:
+      code-analysis:
         required: false
-        type: boolean
-        default: false
+        type: string
       publish:
         required: false
         type: string
       deploy:
         required: false
         type: string
-    secrets:
-      snyk-token:
-        required: true
-      npm-token:
-        required: false
     outputs:
-      pages_url:
-        value: ${{ jobs.deploy-storybook.outputs.pages_url }}
+      github_pages_url:
+        value: ${{ jobs.deploy.outputs.github_pages_url }}
 jobs:
-  snyk-test:
+  code-analysis:
     runs-on: ubuntu-latest
     steps:
       - name: Run Snyk Test
-        uses: tarsilla-app/actions/code-analysis/node/snyk/test@main
+        uses: tarsilla-app/actions/code-analysis/node@main
         with:
-          token: ${{ secrets.snyk-token }}
-  owasp:
+          config: ${{ inputs.code-analysis }}
+  publish:
     runs-on: ubuntu-latest
+    needs: [code-analysis]
     steps:
-      - name: Run OWASP Dependency-Check
-        uses: tarsilla-app/actions/code-analysis/node/owasp@main
+      - name: Publish Library
+        uses: tarsilla-app/actions/publish/node@main
         with:
-          suppression: ${{ inputs.suppression }}
-  snyk-code-test:
+          config: ${{ inputs.publish }}
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Run Snyk Code Test
-        uses: tarsilla-app/actions/code-analysis/node/snyk/code-test@main
-        with:
-          token: ${{ secrets.snyk-token }}
-  codeql:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run CodeQL Analysis
-        uses: tarsilla-app/actions/code-analysis/node/codeql@main
-  publish-npm:
-    runs-on: ubuntu-latest
-    if: ${{ fromJson(inputs.publish).type == 'library' }}
-    needs: [snyk-test, owasp, snyk-code-test, codeql]
-    steps:
-      - name: Publish to NPM
-        uses: tarsilla-app/actions/publish/library@main
-        with:
-          repository: ${{ fromJson(inputs.publish).repository }}
-          npm-token: ${{ secrets.npm-token }}
-  deploy-storybook:
-    runs-on: ubuntu-latest
-    if: ${{ fromJson(inputs.deploy).type == 'storybook' }}
-    needs: [snyk-test, owasp, snyk-code-test, codeql]
+    needs: [code-analysis]
     outputs:
-      pages_url: ${{ steps.deploy.outputs.pages_url }}
+      github_pages_url: ${{ steps.deploy.outputs.github_pages_url }}
     steps:
       - id: deploy
-        name: Deploy Storybook to Github Pages
-        uses: tarsilla-app/actions/deploy/storybook@main
+        name: Deploy Site
+        uses: tarsilla-app/actions/deploy/node@main
         with:
-          host: ${{ fromJson(inputs.deploy).host }}
+          config: ${{ inputs.deploy }}
