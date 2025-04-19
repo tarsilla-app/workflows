@@ -28,7 +28,7 @@ jobs:
   code-analysis:
     runs-on: ubuntu-latest
     steps:
-      - name: Run Snyk Test
+      - name: Run Code Analysis
         uses: tarsilla-app/actions/code-analysis/node@main
         with:
           config: ${{ inputs.code-analysis }}
