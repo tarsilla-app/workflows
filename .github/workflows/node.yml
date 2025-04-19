@@ -16,6 +16,11 @@ on:
         required: false
         type: string
         default: '22.x'
+    secrets:
+      snyk-token:
+        required: false
+      npm-token:
+        required: false
     outputs:
       github_pages_url:
         value: ${{ jobs.deploy.outputs.github_pages_url }}
@@ -27,6 +32,7 @@ jobs:
         uses: tarsilla-app/actions/code-analysis/node@main
         with:
           config: ${{ inputs.code-analysis }}
+          snyk-token: ${{ secrets.snyk-token }}
           node-version: ${{ inputs.node-version }}
   publish:
     runs-on: ubuntu-latest
@@ -36,6 +42,7 @@ jobs:
         uses: tarsilla-app/actions/publish/node@main
         with:
           config: ${{ inputs.publish }}
+          npm-token: ${{ secrets.npm-token }}
           node-version: ${{ inputs.node-version }}
   deploy:
     runs-on: ubuntu-latest
