@@ -30,7 +30,7 @@ jobs:
     with:
       config: ${{ inputs.code-analysis }}
     secrets: 
-      snyk-token: ${{ secrets.SNYK_TOKEN }}
+      snyk-token: ${{ secrets.snyk-token }}
   publish:
     runs-on: ubuntu-latest
     needs: [code-analysis]
