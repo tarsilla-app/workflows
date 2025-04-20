@@ -1,0 +1,16 @@
+name: NodeJS CI/CD
+on:
+  workflow_call:
+    inputs:
+      publish:
+        required: false
+        type: string
+jobs:
+  publish:
+    if: ${{ inputs.publish }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Library
+        uses: tarsilla-app/actions/publish/static@main
+        with:
+          config: ${{ inputs.publish }}
